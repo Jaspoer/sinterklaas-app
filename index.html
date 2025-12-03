@@ -45,13 +45,20 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
         }
 
-        /* --- 3D Kado Visualisatie --- */
+        /* --- 3D Kado Visualisatie (Responsief) --- */
         .gift-container {
             perspective: 1000px;
-            width: 280px;
-            height: 280px;
+            width: 240px; /* Mobiel formaat */
+            height: 240px;
             margin: 0 auto;
             position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .gift-container {
+                width: 280px; /* Desktop formaat */
+                height: 280px;
+            }
         }
 
         .gift-box {
@@ -64,8 +71,8 @@
 
         .gift-face {
             position: absolute;
-            width: 280px;
-            height: 280px;
+            width: 100%;
+            height: 100%;
             /* Rood inpakpapier look */
             background: repeating-linear-gradient(
                 45deg,
@@ -109,8 +116,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-5deg);
-            width: 200px;
-            padding: 20px;
+            width: 180px; /* Iets smaller voor mobiel */
+            padding: 15px;
             background: #fff;
             border: 3px double #c0392b;
             box-shadow: 5px 10px 20px rgba(0,0,0,0.4);
@@ -119,6 +126,13 @@
             border-radius: 2px;
             transform-origin: top center;
             animation: tagSway 4s ease-in-out infinite;
+        }
+        
+        @media (min-width: 768px) {
+            .gift-tag {
+                width: 200px;
+                padding: 20px;
+            }
         }
         
         /* Touwtje aan label */
@@ -198,13 +212,6 @@
             background: linear-gradient(to bottom, #c0392b, #922b21);
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
-        
-        .btn-piet {
-            background: linear-gradient(to bottom, #f1c40f, #d4ac0d);
-            border: 1px solid #9a7d0a;
-            color: #5d4037;
-            font-family: 'Berkshire Swash', cursive;
-        }
 
         .lock-overlay {
             position: absolute;
@@ -220,18 +227,18 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-2 md:p-4">
 
     <!-- Animatie Layer -->
     <div id="animation-layer" class="confetti-container"></div>
 
-    <main class="perkament-kader w-full max-w-xl p-8 text-center relative overflow-hidden">
+    <main class="perkament-kader w-full max-w-xl p-4 md:p-8 text-center relative overflow-hidden">
         
         <!-- Header -->
-        <header class="mb-8 relative z-10">
-            <h1 class="text-4xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Sinterklaas Quiz</h1>
+        <header class="mb-6 md:mb-8 relative z-10">
+            <h1 class="text-3xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Sinterklaas Quiz</h1>
             <div class="h-1 w-24 bg-yellow-600 mx-auto rounded-full mb-4"></div>
-            <p class="text-gray-700 italic text-lg leading-relaxed">
+            <p class="text-gray-700 italic text-base md:text-lg leading-relaxed">
                 "Niet voor iedereen is dit pakje bestemd,<br>
                 Slechts voor de kenner die de Tarhans goed kent."
             </p>
@@ -241,7 +248,7 @@
         <div id="game-container" class="relative z-10">
             
             <!-- Het Kado Visualisatie -->
-            <div class="gift-container mb-10">
+            <div class="gift-container mb-8 md:mb-10">
                 <div id="gift-visual" class="gift-box">
                     <div class="gift-face">
                         <div class="ribbon-vertical"></div>
@@ -249,18 +256,18 @@
                         
                         <!-- Label -->
                         <div class="gift-tag">
-                            <h3 class="text-red-900 text-xl font-bold sint-font">Voor de<br>Tarhan Groep</h3>
-                            <p id="gift-status-text" class="text-sm text-gray-500 mt-2 font-serif italic">Streng beveiligd...</p>
+                            <h3 class="text-red-900 text-lg md:text-xl font-bold sint-font">Voor de<br>Tarhan Groep</h3>
+                            <p id="gift-status-text" class="text-xs md:text-sm text-gray-500 mt-2 font-serif italic">Streng beveiligd...</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Lockout Overlay -->
                 <div id="lock-overlay" class="lock-overlay hidden">
-                    <div class="text-6xl mb-4 animate-bounce">🔒</div>
-                    <h3 class="text-3xl sint-font text-yellow-400 mb-3">Helaas, Pindakaas!</h3>
-                    <p class="text-center px-4 mb-6 text-gray-200">De Sint eist een moment van bezinning.<br>Wacht rustig af voor een nieuwe poging.</p>
-                    <div id="lockout-countdown" class="text-5xl font-bold font-mono text-yellow-500 bg-red-950 px-6 py-3 rounded-lg border-2 border-yellow-600 shadow-inner">
+                    <div class="text-5xl md:text-6xl mb-4 animate-bounce">🔒</div>
+                    <h3 class="text-2xl md:text-3xl sint-font text-yellow-400 mb-3">Helaas, Pindakaas!</h3>
+                    <p class="text-center px-4 mb-6 text-gray-200 text-sm md:text-base">De Sint eist een moment van bezinning.<br>Wacht rustig af voor een nieuwe poging.</p>
+                    <div id="lockout-countdown" class="text-4xl md:text-5xl font-bold font-mono text-yellow-500 bg-red-950 px-6 py-3 rounded-lg border-2 border-yellow-600 shadow-inner">
                         00:30
                     </div>
                 </div>
@@ -276,42 +283,38 @@
 
                 <!-- Vraag Kaart -->
                 <div id="question-card" class="hidden transition-all duration-500">
-                    <div class="bg-white p-6 rounded shadow-lg border border-stone-300 mb-6 relative">
-                        <h2 class="text-2xl text-red-900 mb-6 leading-relaxed font-bold" id="question-title"></h2>
+                    <div class="bg-white p-4 md:p-6 rounded shadow-lg border border-stone-300 mb-6 relative">
+                        <h2 class="text-xl md:text-2xl text-red-900 mb-6 leading-relaxed font-bold" id="question-title"></h2>
                         
                         <input type="text" id="answer-input" 
-                            class="w-full p-4 rounded text-xl text-center mb-4 placeholder-gray-400" 
+                            class="w-full p-3 md:p-4 rounded text-lg md:text-xl text-center mb-4 placeholder-gray-400" 
                             placeholder="Uw antwoord..." autocomplete="off">
                             
                         <p id="feedback-message" class="min-h-[1.5rem] text-sm font-bold mb-2"></p>
                     </div>
 
                     <div class="flex flex-col gap-4">
-                        <button onclick="checkAnswer()" class="btn-sint w-full p-4 rounded text-xl shadow-lg">
+                        <button onclick="checkAnswer()" class="btn-sint w-full p-4 rounded text-lg md:text-xl shadow-lg">
                             Controleren bij de Sint
-                        </button>
-                        
-                        <button onclick="requestHint()" id="hint-button" class="btn-piet w-full p-3 rounded text-base shadow flex items-center justify-center gap-2 transform hover:scale-[1.01] transition">
-                            <span class="text-2xl">🤫</span> Vraag Hoofdpiet om een Hint
                         </button>
                     </div>
                 </div>
 
                 <!-- Onthulling (Success Scherm) -->
                 <div id="unveil-content" class="hidden text-center py-4">
-                    <h2 class="text-4xl text-red-800 mb-6 sint-font">Geweldig Gedaan!</h2>
-                    <div class="bg-white p-8 rounded shadow-xl border-4 border-yellow-500 transform rotate-1">
-                        <p class="text-gray-800 text-xl leading-loose italic">
+                    <h2 class="text-3xl md:text-4xl text-red-800 mb-6 sint-font">Geweldig Gedaan!</h2>
+                    <div class="bg-white p-6 md:p-8 rounded shadow-xl border-4 border-yellow-500 transform rotate-1">
+                        <p class="text-gray-800 text-lg md:text-xl leading-loose italic">
                             "De code is gekraakt, het slot gaat open,<br>
                             Nu hoeven we niet meer in spanning te lopen.<br>
                             Het antwoord was juist, de sfeer is top,<br>
                             Maak dit kado nu maar vliegensvlug open... Hop hop hop!"
                         </p>
                         <div class="mt-8 p-4 bg-red-50 rounded border border-red-200">
-                             <p class="text-2xl font-bold text-red-900">Antwoord: Heerlijk borrelen</p>
+                             <p class="text-xl md:text-2xl font-bold text-red-900">Antwoord: Heerlijk borrelen</p>
                         </div>
                     </div>
-                    <div class="mt-10 text-6xl flex justify-center gap-8">
+                    <div class="mt-10 text-5xl md:text-6xl flex justify-center gap-8">
                         <span class="animate-bounce">🍷</span> 
                         <span class="animate-bounce delay-150">🧀</span> 
                         <span class="animate-bounce delay-300">🥜</span>
@@ -331,10 +334,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Gemini Config
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=";
-        const API_KEY = ""; // Wordt runtime ingevuld
-
         // Vraag (Aangescherpt)
         const QUESTIONS = [
             { 
@@ -351,49 +350,6 @@
         let timerInterval;
         let gameState = { questionIndex: 0, lockoutUntil: new Date(0), unlocked: false };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        // --- GEMINI HINT FUNCTIE ---
-        window.requestHint = async function() {
-            if (new Date() < gameState.lockoutUntil) return;
-
-            const btn = document.getElementById('hint-button');
-            const feedback = document.getElementById('feedback-message');
-            const currentQ = QUESTIONS[gameState.questionIndex];
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin">⏳</span> Hoofdpiet denkt diep na...';
-            feedback.textContent = "";
-
-            // AANGEPASTE PROMPT: Vraag om 1 zin, minder wollig taalgebruik
-            const prompt = `Je bent de cryptische Hoofdpiet. Geef een hint in exact één zin. De hint moet de speler op het spoor zetten van 'het planboek voor de tijd' (de agenda) dat fysiek verstopt zit in een 'ander kado' (een ander pakje in de kamer). Gebruik de woorden 'ander pakje' of 'ander kado'. Gebruik NOOIT het woord 'agenda' of 'antwoord'. Houd het taalgebruik kort en krachtig. De vraag waar het om gaat is: "${currentQ.q}"`;
-
-            try {
-                const response = await fetch(API_URL + API_KEY, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-                
-                const data = await response.json();
-                // Verwijder mogelijke leading/trailing newlines
-                const hint = data.candidates?.[0]?.content?.parts?.[0]?.text.trim();
-                
-                if(hint) {
-                    // Render hint zonder <br> tags, zoals gevraagd
-                    feedback.innerHTML = `<span class="text-yellow-700 italic block mt-2 border-l-4 border-yellow-500 pl-2">Hoofdpiet fluistert: "${hint}"</span>`;
-                } else {
-                    feedback.textContent = "Hoofdpiet is even zijn rijmboek kwijt.";
-                }
-            } catch(e) {
-                console.error("Gemini Hint Error:", e);
-                feedback.textContent = "De verbinding met Spanje is verbroken. Probeer het later opnieuw.";
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span class="text-2xl">🤫</span> Vraag Hoofdpiet om een Hint';
-            }
-        };
 
         // --- CORE APP LOGICA (Ongewijzigd) ---
         async function initApp() {
