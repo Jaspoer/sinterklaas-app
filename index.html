@@ -407,7 +407,9 @@
 
             const currentQuestion = QUESTIONS[index];
             document.getElementById('question-title').textContent = currentQuestion.q;
-            document.getElementById('feedback-message').textContent = '';
+            // OPMERKING: De lijn om de feedback te wissen is hier verwijderd, zodat 
+            // de 'CORRECT!'-melding langer zichtbaar blijft nadat de vraag is bijgewerkt.
+            // document.getElementById('feedback-message').textContent = ''; 
             
             qCard.classList.remove('hidden');
             document.getElementById('unveil-content').classList.add('hidden');
@@ -477,10 +479,13 @@
             const inputElement = document.getElementById('answer-input');
             const feedbackElement = document.getElementById('feedback-message');
 
+            // Wis de vorige feedback bij een nieuwe poging, tenzij vergrendeld
+            feedbackElement.textContent = '';
+            feedbackElement.classList.remove('text-green-600', 'text-red-600', 'text-orange-500');
+
             // Controleer of de app is vergrendeld voordat we het antwoord verwerken
             if (new Date() < gameState.lockoutUntil) {
                  feedbackElement.textContent = `Nog even wachten! De vergrendeling is actief.`;
-                 feedbackElement.classList.remove('text-green-500');
                  feedbackElement.classList.add('text-orange-500');
                  return;
             }
@@ -493,7 +498,6 @@
                 // Goed antwoord
                 gameState.questionIndex++;
                 feedbackElement.textContent = "CORRECT! Daar zijn de pepernoten! De volgende vraag is onthuld.";
-                feedbackElement.classList.remove('text-red-500', 'text-orange-500');
                 feedbackElement.classList.add('text-green-600');
                 
                 showPepernoten(); // Activeer de pepernoten animatie
@@ -504,12 +508,14 @@
                 }
 
                 if (!isLocalMode) saveGameState(); // Opslaan alleen als Firebase beschikbaar is
+                
+                // FIX: Roep renderUI onmiddellijk aan om de volgende vraag (of het onthullen) te tonen
+                renderUI(); 
 
             } else {
                 // Fout antwoord -> 5 seconden vergrendeling
                 gameState.lockoutUntil = new Date(Date.now() + lockoutDuration);
                 feedbackElement.textContent = `FOUT! Oei, daar komt de straf-Piet. Het kado is nu 5 seconden vergrendeld.`;
-                feedbackElement.classList.remove('text-green-500');
                 feedbackElement.classList.add('text-red-600');
 
                 showPiet(); // Activeer de Piet animatie
