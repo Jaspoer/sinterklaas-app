@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>De Tarhan's Familie Sinterklaas Show</title>
+    <!-- Laad Tailwind CSS voor moderne styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Laad QR Code Bibliotheek via CDN -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <!-- Laad Inter font en aangepaste Sinterklaasstijlen -->
+    <style>
+        /* Aangepaste Sinterklaas Stijlen */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #2c3e50; 
+            /* Placeholder voor een Sinterklaaspatroon (bijv. pepernoten of sterren) */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                              url('https://placehold.co/800x600/b84a25/ffffff?text=%E2%9C%A8%0APiet%0A%E2%9C%A8'); 
+            background-size: cover;
+            background-position: center;
+        }
+        .main-card {
+            background-color: rgba(255, 255, 255, 0.95); 
+            border: 8px solid #fbbd08; 
+        }
+        
+        /* Kado Styling */
+        .gift-box {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            background-color: #991b1b; 
+            border: 10px solid #fbbf24; 
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transition: transform 0.6s ease-in-out, box-shadow 0.6s ease-in-out;
+        }
+        /* Strik aanpassingen voor goud */
+        .bow-top, .bow-ribbon, .ribbon-h {
+            background-color: #fbbf24; 
+            border: 4px solid #b45309;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Geopend Kado Status */
+        .gift-opened .gift-box {
+            transform: scale(1.05) rotateY(360deg); 
+            background-color: #14532d; 
+            box-shadow: 0 15px 30px rgba(20, 83, 45, 0.8);
+        }
+        .gift-opened .gift-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Animatie CSS voor Piet en Pepernoten */
+        .animation-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .piet-element {
+            position: absolute;
+            bottom: -100px; 
+            right: 15%;
+            font-size: 80px; 
+            opacity: 0;
+            transform: translateY(0);
+            transition: opacity 0.5s, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .piet-active {
+            opacity: 1;
+            transform: translateY(-120px); 
+        }
+        .pepernoot {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: fall 2s ease-in forwards;
+        }
+        /* Aangepaste keyframes voor vallende pepernoten */
+        @keyframes fall {
+            0% { opacity: 1; transform: translateY(-50px) rotate(0deg) scale(1); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(100vh) rotate(360deg) scale(0.5); }
+        }
+    </style>
+</head>
+<body class="p-4 flex items-center justify-center min-h-screen">
+
+    <!-- Animatie Layer voor Piet en Pepernoten -->
+    <div id="animation-layer" class="animation-layer"></div>
+
+    <main id="app-container" class="main-card w-full max-w-lg p-8 rounded-2xl shadow-2xl text-center">
+        <!-- Titel in Sinterklaasstijl -->
+        <h1 class="text-4xl font-extrabold mb-6 text-red-800 border-b-4 border-yellow-500 pb-2">De Tarhan's Familie Sinterklaas Show</h1>
+        <p class="text-gray-700 mb-6 font-medium">Beantwoord de vragen correct om het kado te onthullen. Fout is 5 seconden wachten!</p>
+
+        <!-- Kado Visualisatie en Timer -->
+        <div class="flex justify-center mb-8">
+            <div class="relative">
+                <div id="gift-visual" class="gift-box rounded-xl">
+                    <!-- Strik elementen -->
+                    <div class="bow-ribbon"></div>
+                    <div class="ribbon-h"></div>
+                    <div class="bow-top"></div>
+                    <div class="flex items-center justify-center h-full">
+                        <p id="gift-status-text" class="text-white font-black text-3xl p-4 drop-shadow-lg">🎁 Versloten 🎁</p>
+                    </div>
+                </div>
+                <!-- Timer Display boven het kado geplaatst -->
+                <div id="timer-display" class="absolute -top-12 left-1/2 transform -translate-x-1/2 p-2 bg-red-800 text-white font-extrabold rounded-lg shadow-xl hidden">
+                    <p class="text-xs">Vergrendeling actief:</p>
+                    <p id="lockout-countdown" class="text-2xl mt-0">00:05</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Area / Content Area -->
+        <div id="content-area">
+            <div id="loading-spinner" class="text-center">
+                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-red-700 mx-auto mb-4"></div>
+                <p class="text-gray-500">Laden...</p>
+            </div>
+            
+            <div id="question-card" class="hidden">
+                <h2 class="text-xl font-bold mb-4 text-red-600" id="question-title"></h2>
+                <div class="mb-4">
+                    <input type="text" id="answer-input" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500" placeholder="Typ je antwoord hier..." required>
+                </div>
+                <button onclick="checkAnswer()" class="w-full p-3 bg-red-700 text-white font-bold rounded-lg hover:bg-red-800 transition shadow-md transform hover:scale-[1.01] active:scale-[0.99]">
+                    Antwoord Verifiëren
+                </button>
+                <p id="feedback-message" class="mt-4 text-sm font-medium"></p>
+            </div>
+
+            <!-- Onthuld Kado Inhoud: Aangepaste Sinterklaas tekst + QR Code -->
+            <div id="unveil-content" class="gift-content p-6 bg-yellow-100 border-4 border-red-500 rounded-lg shadow-inner hidden">
+                <h2 class="text-3xl font-extrabold text-red-700 mb-4">HOERA! HET KADO IS VAN JULLIE!</h2>
+                <p class="text-gray-800 text-lg">
+                    Lieve Tarhan's Familie, Sinterklaas en zijn Pieten hebben met bewondering gezien hoe goed jullie de vragen hebben beantwoord! Dit kado is het bewijs van jullie slimheid. Open het nu en geniet van de verrassing.
+                </p>
+                <p class="mt-4 text-6xl">🎁 🥳 👑</p>
+
+                <!-- QR Code Sectie -->
+                <h3 class="text-xl font-bold mt-6 mb-3 text-red-700 border-t pt-4 border-red-300">Deel dit Kado Avontuur!</h3>
+                <p class="text-sm text-gray-600 mb-2 font-semibold bg-red-100 p-2 rounded-lg">
+                    LET OP: Vervang in de code de placeholder URL door de ECHTE gepubliceerde link van deze app!
+                </p>
+                <div id="qrcode" class="mx-auto w-40 h-40 border-4 border-red-700 p-2 bg-white rounded-lg shadow-lg"></div>
+                <p class="text-xs text-gray-500 mt-2 break-all" id="app-url-display"></p>
+            </div>
+        </div>
+        <p id="user-id-display" class="text-xs text-gray-400 mt-4">Gebruikers ID: </p>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Vragenlijst voor het kado-avontuur
+        const QUESTIONS = [
+            { q: "Vraag 1/5: Wat is de hoofdstad van Nederland?", a: "Amsterdam" },
+            { q: "Vraag 2/5: Hoeveel poten heeft een spin?", a: "8" },
+            { q: "Vraag 3/5: Welke planeet staat het dichtst bij de zon?", a: "Mercurius" },
+            { q: "Vraag 4/5: Wat is de chemische formule voor water?", a: "H2O" },
+            { q: "Vraag 5/5: Hoeveel dagen heeft een schrikkeljaar?", a: "366" }
+        ];
+        
+        // De vergrendelingstijd is nu 5 seconden
+        const lockoutDuration = 5 * 1000; // 5 seconden in milliseconden
+
+        // Globale variabelen
+        let db = null;
+        let auth = null;
+        let userId = null;
+        let isLocalMode = false; // Vlag om lokaal gebruik te detecteren
+        let gameState = {
+            questionIndex: 0,
+            lockoutUntil: new Date(0),
+            unlocked: false
+        };
+        let timerInterval = null;
+
+        // Firestore paden
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // Functie om de QR code te genereren
+        function generateQrCode() {
+            // Pas DEZE URL aan naar de live URL van de app nadat deze is gepubliceerd!
+            const urlToEncode = "https://TARHANS_SINTERKLAAS_APP_URL.com"; 
+            
+            document.getElementById('app-url-display').textContent = urlToEncode;
+
+            const qrcodeElement = document.getElementById("qrcode");
+            // Eerst leegmaken om dubbele generatie te voorkomen
+            qrcodeElement.innerHTML = "";
+
+            // Controleer of de QRCode functie beschikbaar is (van qrcode.js)
+            if (typeof QRCode !== 'undefined') {
+                 new QRCode(qrcodeElement, {
+                    text: urlToEncode,
+                    width: 150,
+                    height: 150,
+                    colorDark : "#991b1b", // Sinterklaas Rood
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            } else {
+                qrcodeElement.innerHTML = "<p class='text-red-500 text-center'>Kon QR code bibliotheek niet laden.</p>";
+            }
+        }
+
+        // Initialiseer Firebase en authenticatie
+        async function initApp() {
+            try {
+                const configString = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+                let firebaseConfig;
+                try {
+                     firebaseConfig = JSON.parse(configString);
+                } catch (e) {
+                     firebaseConfig = {};
+                }
+                
+                // --- FIX: Graceful exit bij lokaal draaien zonder config ---
+                // Controleer of de configuratie leeg is (wat gebeurt bij lokaal openen)
+                if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.apiKey) {
+                    isLocalMode = true;
+                    console.warn("LET OP: Firebase configuratie ontbreekt. Real-time opslag is uitgeschakeld. Gebruik alleen voor lokaal testen.");
+                    document.getElementById('loading-spinner').innerHTML = `<p class="text-gray-500">
+                        Lokaal geopend: Real-time opslag is uitgeschakeld. De voortgang wordt niet opgeslagen.
+                    </p>`;
+                    // Simuleer succesvolle 'initialisatie' voor lokale functionaliteit
+                    document.getElementById('loading-spinner').classList.add('hidden');
+                    userId = 'local-user-' + Math.random().toString(36).substring(2, 9);
+                    document.getElementById('user-id-display').textContent = `Gebruikers ID: ${userId} (Lokaal)`;
+                    renderUI(); // Start de UI zonder Firebase
+                    return; 
+                }
+
+                // Normale Firebase initialisatie (alleen in Canvas)
+                setLogLevel('debug');
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Meld aan met aangepaste token of anoniem
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('user-id-display').textContent = `Gebruikers ID: ${userId}`;
+                        setupRealtimeListener();
+                    } else {
+                        console.error("Gebruiker niet geauthenticeerd.");
+                        document.getElementById('loading-spinner').innerHTML = `<p class="text-red-500">Fout bij authenticatie. Kan de status niet laden.</p>`;
+                    }
+                });
+            } catch (error) {
+                console.error("Fout bij het initialiseren van Firebase:", error);
+                // Toon een duidelijke foutmelding in de UI in geval van een crash
+                document.getElementById('loading-spinner').innerHTML = `<p class="text-red-500">Fout bij het laden van de app. Controleer de console.</p>`;
+            }
+        }
+
+        // Realtime luisteraar voor de spelstatus
+        function setupRealtimeListener() {
+            if (!userId || isLocalMode) return; // Stop als we in lokale modus zijn
+
+            // Pad voor het opslaan van de status per gebruiker
+            const giftDocRef = doc(db, `artifacts/${appId}/users/${userId}/gifts/unveil-state`);
+            
+            // Standaard document initialisatie als het niet bestaat
+            setDoc(giftDocRef, { questionIndex: 0, lockoutUntil: new Date(0), unlocked: false, userId: userId }, { merge: true })
+                .then(() => {
+                    onSnapshot(giftDocRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            // Converteer Firestore Timestamp naar Date object
+                            gameState.questionIndex = data.questionIndex || 0;
+                            gameState.unlocked = data.unlocked || false;
+                            
+                            // Zorg ervoor dat lockoutUntil een Date object is
+                            if (data.lockoutUntil && data.lockoutUntil.toDate) {
+                                gameState.lockoutUntil = data.lockoutUntil.toDate();
+                            } else if (data.lockoutUntil instanceof Date) {
+                                gameState.lockoutUntil = data.lockoutUntil;
+                            } else {
+                                gameState.lockoutUntil = new Date(0);
+                            }
+                            
+                            renderUI();
+                            startTimer();
+                        } else {
+                            console.log("Geen document gevonden, nieuw document aangemaakt.");
+                            renderUI();
+                            startTimer();
+                        }
+                    }, (error) => {
+                        console.error("Fout bij het luisteren naar de status:", error);
+                    });
+                })
+                .catch(error => {
+                    console.error("Fout bij het instellen van de initiële status:", error);
+                });
+        }
+
+        // Slaat de huidige spelstatus op in Firestore
+        async function saveGameState() {
+            if (!userId || !db || isLocalMode) return; // Stop als we in lokale modus zijn
+            const giftDocRef = doc(db, `artifacts/${appId}/users/${userId}/gifts/unveil-state`);
+            try {
+                await setDoc(giftDocRef, {
+                    questionIndex: gameState.questionIndex,
+                    lockoutUntil: gameState.lockoutUntil,
+                    unlocked: gameState.unlocked,
+                    userId: userId 
+                }, { merge: true });
+                console.log("Spelstatus opgeslagen.");
+            } catch (e) {
+                console.error("Fout bij het opslaan van de status:", e);
+            }
+        }
+
+        // Start het aftellen voor de vergrendeling
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const timerDisplay = document.getElementById('lockout-countdown');
+            const timerContainer = document.getElementById('timer-display');
+            
+            const updateTimer = () => {
+                const now = new Date();
+                const diffMs = gameState.lockoutUntil.getTime() - now.getTime();
+
+                if (diffMs > 0) {
+                    // Nog vergrendeld
+                    timerContainer.classList.remove('hidden');
+                    const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = totalSeconds % 60;
+                    
+                    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    document.getElementById('question-card').classList.add('hidden');
+                    document.getElementById('gift-status-text').textContent = "🔒 Slot er op! 🔒";
+                    document.getElementById('gift-visual').classList.remove('gift-opened');
+                } else {
+                    // Vergrendeling voorbij
+                    if (timerInterval) clearInterval(timerInterval);
+                    timerContainer.classList.add('hidden');
+                    if (!gameState.unlocked) {
+                        // Reset de vergrendelingstijd in state en DB als de tijd voorbij is
+                        gameState.lockoutUntil = new Date(0);
+                        if (!isLocalMode) saveGameState(); // Opslaan alleen als Firebase beschikbaar is
+                        renderQuestion();
+                    }
+                }
+            };
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Render de juiste UI op basis van de status
+        function renderUI() {
+            document.getElementById('loading-spinner').classList.add('hidden');
+            document.getElementById('answer-input').value = '';
+
+            if (gameState.unlocked) {
+                renderUnveiled();
+            } else if (new Date() < gameState.lockoutUntil) {
+                // Timer is actief en wordt bijgewerkt door startTimer()
+                document.getElementById('question-card').classList.add('hidden');
+                document.getElementById('unveil-content').classList.add('hidden');
+                document.getElementById('feedback-message').textContent = 'Oei, de tijd tikt... even geduld!';
+                document.getElementById('feedback-message').classList.add('text-orange-500');
+            } else {
+                renderQuestion();
+            }
+        }
+
+        // Toon de huidige vraag
+        function renderQuestion() {
+            const index = gameState.questionIndex;
+            const qCard = document.getElementById('question-card');
+            const visual = document.getElementById('gift-visual');
+
+            if (index >= QUESTIONS.length) {
+                // Als alle vragen beantwoord zijn, onthul het kado
+                gameState.unlocked = true;
+                if (!isLocalMode) saveGameState(); // Opslaan alleen als Firebase beschikbaar is
+                renderUnveiled();
+                return;
+            }
+
+            const currentQuestion = QUESTIONS[index];
+            document.getElementById('question-title').textContent = currentQuestion.q;
+            document.getElementById('feedback-message').textContent = '';
+            
+            qCard.classList.remove('hidden');
+            document.getElementById('unveil-content').classList.add('hidden');
+            
+            // Update visualisatie op basis van voortgang
+            const progress = (index / QUESTIONS.length) * 100;
+            visual.style.filter = `brightness(${100 - progress * 0.15}%) saturate(1.1)`; 
+            document.getElementById('gift-status-text').textContent = `🎁 ${index + 1}/5 Beantwoord 🎁`;
+        }
+
+        // Toon de onthulde inhoud
+        function renderUnveiled() {
+            const visual = document.getElementById('gift-visual');
+            visual.classList.add('gift-opened');
+            visual.style.filter = 'none';
+            document.getElementById('gift-status-text').textContent = "OPEN!";
+            
+            document.getElementById('question-card').classList.add('hidden');
+            document.getElementById('unveil-content').classList.remove('hidden');
+
+            generateQrCode(); // Genereer de QR code zodra het kado open is.
+        }
+
+        // Functie om pepernoten te laten vallen (bij goed antwoord)
+        function showPepernoten() {
+            const layer = document.getElementById('animation-layer');
+            const elements = ['🍪', '⭐', '🍊']; // Verschillende Sinterklaas symbolen
+
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('span');
+                p.className = 'pepernoot';
+                p.textContent = elements[Math.floor(Math.random() * elements.length)];
+                p.style.left = `${Math.random() * 80 + 10}%`; 
+                p.style.animationDelay = `${Math.random() * 0.5}s`;
+                layer.appendChild(p);
+                
+                // Verwijder na animatie
+                setTimeout(() => p.remove(), 2500); 
+            }
+        }
+
+        // Functie om de Piet te tonen (bij fout antwoord)
+        function showPiet() {
+            const layer = document.getElementById('animation-layer');
+            const piet = document.createElement('div');
+            piet.className = 'piet-element';
+            // Gebruik een Piet-achtige emoji
+            piet.textContent = '🧑‍🎄'; 
+
+            layer.appendChild(piet);
+            
+            // Toon de Piet
+            setTimeout(() => {
+                piet.classList.add('piet-active');
+            }, 50);
+
+            // Verberg de Piet na een korte tijd
+            setTimeout(() => {
+                piet.classList.remove('piet-active');
+                // Verwijder het element na de transitie is voltooid
+                setTimeout(() => piet.remove(), 600); 
+            }, 1800);
+        }
+
+        // Controleer het ingevoerde antwoord
+        window.checkAnswer = function() {
+            const inputElement = document.getElementById('answer-input');
+            const feedbackElement = document.getElementById('feedback-message');
+
+            // Controleer of de app is vergrendeld voordat we het antwoord verwerken
+            if (new Date() < gameState.lockoutUntil) {
+                 feedbackElement.textContent = `Nog even wachten! De vergrendeling is actief.`;
+                 feedbackElement.classList.remove('text-green-500');
+                 feedbackElement.classList.add('text-orange-500');
+                 return;
+            }
+
+            const userAnswer = inputElement.value.trim().toLowerCase();
+            const currentQuestion = QUESTIONS[gameState.questionIndex];
+            const correctAnswer = currentQuestion.a.trim().toLowerCase().replace(/é/g, 'e'); 
+
+            if (userAnswer === correctAnswer) {
+                // Goed antwoord
+                gameState.questionIndex++;
+                feedbackElement.textContent = "CORRECT! Daar zijn de pepernoten! De volgende vraag is onthuld.";
+                feedbackElement.classList.remove('text-red-500', 'text-orange-500');
+                feedbackElement.classList.add('text-green-600');
+                
+                showPepernoten(); // Activeer de pepernoten animatie
+
+                if (gameState.questionIndex >= QUESTIONS.length) {
+                    gameState.unlocked = true;
+                    feedbackElement.textContent = "GEFELICITEERD! Je hebt alle vragen beantwoord. Het kado ontvouwt zich!";
+                }
+
+                if (!isLocalMode) saveGameState(); // Opslaan alleen als Firebase beschikbaar is
+
+            } else {
+                // Fout antwoord -> 5 seconden vergrendeling
+                gameState.lockoutUntil = new Date(Date.now() + lockoutDuration);
+                feedbackElement.textContent = `FOUT! Oei, daar komt de straf-Piet. Het kado is nu 5 seconden vergrendeld.`;
+                feedbackElement.classList.remove('text-green-500');
+                feedbackElement.classList.add('text-red-600');
+
+                showPiet(); // Activeer de Piet animatie
+                
+                if (!isLocalMode) saveGameState(); // Opslaan alleen als Firebase beschikbaar is
+                startTimer(); // Start of update de timer direct
+            }
+            inputElement.value = '';
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
