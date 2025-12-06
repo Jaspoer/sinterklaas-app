@@ -270,9 +270,10 @@
                 <div id="lock-overlay" class="lock-overlay hidden">
                     <div class="text-5xl md:text-6xl mb-4 animate-bounce">🔒</div>
                     <h3 class="text-2xl md:text-3xl sint-font text-yellow-400 mb-3">Helaas, Pindakaas!</h3>
-                    <p class="text-center px-4 mb-6 text-gray-200 text-sm md:text-base">De Sint eist een moment van bezinning.<br>Wacht rustig af voor een nieuwe poging.</p>
+                    <!-- Aangepaste tekst voor 20 minuten wachttijd -->
+                    <p class="text-center px-4 mb-6 text-gray-200 text-sm md:text-base">De Sint eist een moment van bezinning.<br>Wacht rustig 20 minuten af voor een nieuwe poging.</p>
                     <div id="lockout-countdown" class="text-4xl md:text-5xl font-bold font-mono text-yellow-500 bg-red-950 px-6 py-3 rounded-lg border-2 border-yellow-600 shadow-inner">
-                        00:30
+                        20:00
                     </div>
                 </div>
             </div>
@@ -346,7 +347,8 @@
             }
         ];
         
-        const LOCKOUT_MS = 30 * 1000;
+        // WACHTTIJD AANGEPAST NAAR 20 MINUTEN (20 * 60 * 1000 MS)
+        const LOCKOUT_MS = 20 * 60 * 1000;
 
         // State
         let db, auth, userId;
@@ -456,8 +458,15 @@
 
                 if (diff > 0) {
                     overlay.classList.remove('hidden');
-                    const sec = Math.ceil(diff / 1000);
-                    countdown.textContent = `00:${sec < 10 ? '0'+sec : sec}`;
+                    const totalSeconds = Math.ceil(diff / 1000);
+                    const minutes = Math.floor(totalSeconds / 60);
+                    const seconds = totalSeconds % 60;
+                    
+                    // Formatteer als MM:SS
+                    const minStr = minutes < 10 ? '0' + minutes : minutes;
+                    const secStr = seconds < 10 ? '0' + seconds : seconds;
+                    countdown.textContent = `${minStr}:${secStr}`;
+
                 } else {
                     overlay.classList.add('hidden');
                     clearInterval(timerInterval);
@@ -534,7 +543,8 @@
             } else {
                 gameState.lockoutUntil = new Date(Date.now() + LOCKOUT_MS);
                 
-                feedback.textContent = "Helaas, de code is ongeldig. De kluis is dertig seconden vergrendeld.";
+                // Feedback tekst aangepast naar 20 minuten
+                feedback.textContent = "Helaas, de code is ongeldig. De kluis is twintig minuten vergrendeld.";
                 feedback.className = "text-red-700 font-bold mb-2";
                 
                 giftBox.classList.add('animate-shake');
