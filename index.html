@@ -10,7 +10,7 @@
     <!-- Google Fonts: 'Berkshire Swash' voor koppen, 'Merriweather' voor leesbare tekst -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
     <style>
         /* --- Sinterklaas Thema Styling --- */
@@ -175,7 +175,7 @@
         .gift-opened .gift-box {
             transform: rotateY(180deg) scale(0);
             opacity: 0;
-            transition: all 1s ease-in-out;
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
         .confetti-container {
@@ -236,11 +236,13 @@
         
         <!-- Header -->
         <header class="mb-6 md:mb-8 relative z-10">
-            <h1 class="text-3xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Sinterklaas Quiz</h1>
+            <!-- TITEL AANGEPAST NAAR 'Tarhan Technologie Training' -->
+            <h1 class="text-3xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Tarhan Technologie Training</h1>
             <div class="h-1 w-24 bg-yellow-600 mx-auto rounded-full mb-4"></div>
+            <!-- ONDERTITEL IS HIER AANGEPAST -->
             <p class="text-gray-700 italic text-base md:text-lg leading-relaxed">
-                "Niet voor iedereen is dit pakje bestemd,<br>
-                Slechts voor de kenner die de Tarhans goed kent."
+                "Het lot van de kadootjes ligt in jouw handen,<br>
+                Zorg dat er nog meer kado's op de stapel landen!"
             </p>
         </header>
 
@@ -256,7 +258,9 @@
                         
                         <!-- Label -->
                         <div class="gift-tag">
-                            <h3 class="text-red-900 text-lg md:text-xl font-bold sint-font">Voor de<br>Tarhan Groep</h3>
+                            <!-- AANGEPAST: Zak van Sinterklaas -->
+                            <h3 class="text-red-900 text-lg md:text-xl font-bold sint-font">Zak van<br>Sinterklaas</h3>
+                            <!-- AANGEPAST: Streng beveiligd... -->
                             <p id="gift-status-text" class="text-xs md:text-sm text-gray-500 mt-2 font-serif italic">Streng beveiligd...</p>
                         </div>
                     </div>
@@ -284,11 +288,12 @@
                 <!-- Vraag Kaart -->
                 <div id="question-card" class="hidden transition-all duration-500">
                     <div class="bg-white p-4 md:p-6 rounded shadow-lg border border-stone-300 mb-6 relative">
-                        <h2 class="text-xl md:text-2xl text-red-900 mb-6 leading-relaxed font-bold" id="question-title"></h2>
+                        <!-- RIJM WORDT NU TOONGEGEVEN MET BR VOOR REGELAFBREKING -->
+                        <h2 class="text-lg sm:text-xl md:text-2xl text-red-900 mb-6 leading-tight font-bold" id="question-title">De Pieten hebben een zak vol kadootjes gevuld<br>Op 12 september wordt het wachtwoord onthuld.</h2>
                         
                         <input type="text" id="answer-input" 
                             class="w-full p-3 md:p-4 rounded text-lg md:text-xl text-center mb-4 placeholder-gray-400" 
-                            placeholder="Uw antwoord..." autocomplete="off">
+                            placeholder="Uw wachtwoord..." autocomplete="off">
                             
                         <p id="feedback-message" class="min-h-[1.5rem] text-sm font-bold mb-2"></p>
                     </div>
@@ -302,22 +307,21 @@
 
                 <!-- Onthulling (Success Scherm) -->
                 <div id="unveil-content" class="hidden text-center py-4">
-                    <h2 class="text-3xl md:text-4xl text-red-800 mb-6 sint-font">Geweldig Gedaan!</h2>
+                    <h2 class="text-3xl md:text-4xl text-red-800 mb-6 sint-font">Toegang Verleend!</h2>
                     <div class="bg-white p-6 md:p-8 rounded shadow-xl border-4 border-yellow-500 transform rotate-1">
+                        <!-- AANGEPASTE TEKST -->
                         <p class="text-gray-800 text-lg md:text-xl leading-loose italic">
-                            "De code is gekraakt, het slot gaat open,<br>
-                            Nu hoeven we niet meer in spanning te lopen.<br>
-                            Het antwoord was juist, de sfeer is top,<br>
-                            Maak dit kado nu maar vliegensvlug open... Hop hop hop!"
+                            "Het antwoord was juist, het kado gaat open:<br>
+                            Jullie mogen nu naar de kelder toe lopen!"
                         </p>
                         <div class="mt-8 p-4 bg-red-50 rounded border border-red-200">
-                             <p class="text-xl md:text-2xl font-bold text-red-900">Antwoord: Heerlijk borrelen</p>
+                             <p class="text-xl md:text-2xl font-bold text-red-900">Antwoord: groetjesvanICTpiet</p>
                         </div>
                     </div>
                     <div class="mt-10 text-5xl md:text-6xl flex justify-center gap-8">
-                        <span class="animate-bounce">🍷</span> 
-                        <span class="animate-bounce delay-150">🧀</span> 
-                        <span class="animate-bounce delay-300">🥜</span>
+                        <span class="animate-bounce">💻</span> 
+                        <span class="animate-bounce delay-150">🔑</span> 
+                        <span class="animate-bounce delay-300">🎁</span>
                     </div>
                     
                     <button onclick="resetGame()" class="text-gray-400 hover:text-gray-600 underline text-xs mt-12">
@@ -334,11 +338,11 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Vraag (Aangescherpt)
+        // Vraag en Antwoord (AANGEPAST)
         const QUESTIONS = [
             { 
-                q: "Op 12 september komen we samen, dat is een feit,\nMaar noem eens: wat is dan de grote activiteit?", 
-                a: "Heerlijk borrelen" 
+                q: "De Pieten hebben een zak vol kadootjes gevuld<br>Op 12 september wordt het wachtwoord onthuld.", 
+                a: "groetjesvanictpiet" 
             }
         ];
         
@@ -475,12 +479,14 @@
             if (gameState.unlocked) {
                 qCard.classList.add('hidden');
                 unveil.classList.remove('hidden');
+                visual.parentElement.classList.add('gift-opened'); // Belangrijk: De gift-container krijgt de klasse
                 visual.parentElement.classList.add('hidden'); 
                 createConfetti();
             } else {
                 qCard.classList.remove('hidden');
                 unveil.classList.add('hidden');
                 visual.parentElement.classList.remove('hidden');
+                visual.parentElement.classList.remove('gift-opened');
                 renderQuestion();
             }
         }
@@ -492,6 +498,12 @@
                 document.getElementById('question-title').innerHTML = q.q.replace(/\n/g, '<br>');
             }
         }
+        
+        // Functie om de input te normaliseren voor de check (kleine letters, geen spaties of leestekens)
+        function normalizeAnswer(answer) {
+            // Verwijder alle niet-alfanumerieke tekens behalve letters en cijfers, en zet om naar kleine letters.
+            return answer.toLowerCase().replace(/[^\w]/g, '');
+        }
 
         window.checkAnswer = function() {
             if (new Date() < gameState.lockoutUntil) return;
@@ -500,13 +512,13 @@
             const feedback = document.getElementById('feedback-message');
             const giftBox = document.getElementById('gift-visual');
 
-            const val = input.value.trim().toLowerCase();
+            const val = normalizeAnswer(input.value);
             const q = QUESTIONS[gameState.questionIndex];
-            const correct = q.a.toLowerCase().replace(/é/g, 'e');
+            const correct = normalizeAnswer(q.a);
 
             if (val === correct) {
                 gameState.questionIndex++;
-                feedback.textContent = "Dat is juist! De Sint is trots.";
+                feedback.textContent = "Dat is juist! De code is geaccepteerd.";
                 feedback.className = "text-green-700 font-bold mb-2";
                 
                 giftBox.style.transform = "scale(1.1)";
@@ -522,7 +534,7 @@
             } else {
                 gameState.lockoutUntil = new Date(Date.now() + LOCKOUT_MS);
                 
-                feedback.textContent = "Helaas, dat is niet wat ik zocht.";
+                feedback.textContent = "Helaas, de code is ongeldig. De kluis is dertig seconden vergrendeld.";
                 feedback.className = "text-red-700 font-bold mb-2";
                 
                 giftBox.classList.add('animate-shake');
