@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>De Tarhan's Pakjesavond Pracht</title>
+    <title>Technologische pakjesbeveiliging</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -236,8 +236,8 @@
         
         <!-- Header -->
         <header class="mb-6 md:mb-8 relative z-10">
-            <!-- TITEL AANGEPAST NAAR 'Tarhan Technologie Training' -->
-            <h1 class="text-3xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Tarhan Technologie Training</h1>
+            <!-- TITEL AANGEPAST -->
+            <h1 class="text-3xl md:text-5xl text-red-900 mb-2" style="text-shadow: 1px 1px 0px #fff;">Technologische pakjesbeveiliging</h1>
             <div class="h-1 w-24 bg-yellow-600 mx-auto rounded-full mb-4"></div>
             <!-- ONDERTITEL IS HIER AANGEPAST -->
             <p class="text-gray-700 italic text-base md:text-lg leading-relaxed">
@@ -289,8 +289,13 @@
                 <!-- Vraag Kaart -->
                 <div id="question-card" class="hidden transition-all duration-500">
                     <div class="bg-white p-4 md:p-6 rounded shadow-lg border border-stone-300 mb-6 relative">
-                        <!-- RIJM WORDT NU TOONGEGEVEN MET BR VOOR REGELAFBREKING -->
-                        <h2 class="text-lg sm:text-xl md:text-2xl text-red-900 mb-6 leading-tight font-bold" id="question-title">De Pieten hebben een zak vol kadootjes gevuld<br>Op 12 september wordt het wachtwoord onthuld.</h2>
+                        <!-- RIJM IS HIER OPNIEUW AANGEPAST -->
+                        <h2 class="text-lg sm:text-xl md:text-2xl text-red-900 mb-6 leading-tight font-bold" id="question-title">
+                            De Pieten hebben een zak vol kadootjes gevuld<br>
+                            Op 12 september wordt het wachtwoord onthuld.<br>
+                            Probeer te bedenken wat er die dag is,<br>
+                            Anders lopen jullie de kadootjes mis!
+                        </h2>
                         
                         <input type="text" id="answer-input" 
                             class="w-full p-3 md:p-4 rounded text-lg md:text-xl text-center mb-4 placeholder-gray-400" 
@@ -339,15 +344,16 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Vraag en Antwoord (AANGEPAST)
+        // Vraag en Antwoord 
         const QUESTIONS = [
             { 
-                q: "De Pieten hebben een zak vol kadootjes gevuld<br>Op 12 september wordt het wachtwoord onthuld.", 
+                // VRAAG IS HIER AANGEPAST
+                q: "De Pieten hebben een zak vol kadootjes gevuld\nOp 12 september wordt het wachtwoord onthuld.\nProbeer te bedenken wat er die dag is,\nAnders lopen jullie de kadootjes mis!", 
                 a: "groetjesvanictpiet" 
             }
         ];
         
-        // WACHTTIJD AANGEPAST NAAR 20 MINUTEN (20 * 60 * 1000 MS)
+        // WACHTTIJD: 20 MINUTEN (20 * 60 * 1000 MS)
         const LOCKOUT_MS = 20 * 60 * 1000;
 
         // State
